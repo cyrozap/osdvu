@@ -68,11 +68,11 @@ With "rst", "is_receiving" and "recv_error" disconnected, the invocation would l
 
 == Adjusting Clock Rate / Baud Rate ==
 
-The clock rate and baud rate can be altered by changing the CLOCK_DIVIDE parameter passed in to the uart module. This value is calculated by taking the clock frequency in Hz (for example, 50MHz is 50,000,000 Hz), dividing it by the baud rate times 16 (for example 9600)
+The clock rate and baud rate can be altered by changing the CLOCK_DIVIDE parameter passed in to the uart module. This value is calculated by taking the clock frequency in Hz (for example, 50MHz is 50,000,000 Hz), dividing it by the baud rate times 4 (for example 9600)
 
-CLOCK_DIVIDE = Frequency(clk) / (16 * Baud)
+CLOCK_DIVIDE = Frequency(clk) / (4 * Baud)
 
-In the example given, the resulting constant is 50000000 / (16 * 9600) = 325 . This is the value that the module has by default. To create a UART running at a different rate, insert the CLOCK_DIVIDE value in to the initialisation like:
+In the example given, the resulting constant is 50000000 / (4 * 9600) = 1302 . This is the value that the module has by default. To create a UART running at a different rate, insert the CLOCK_DIVIDE value in to the initialisation like:
 
-uart #(.CLOCK_DIVIDE( 325 )) MyInstanceName (clk, ...);
+uart #(.CLOCK_DIVIDE( 1302 )) MyInstanceName (clk, ...);
 

@@ -35,7 +35,7 @@ module uart(
     output recv_error // Indicates error in receiving packet.
     );
 
-parameter CLOCK_DIVIDE = 325; // clock rate (50Mhz) / baud rate (9600) / 16
+parameter CLOCK_DIVIDE = 1302; // clock rate (50Mhz) / (baud rate (9600) * 4)
 
 // States for the receiving state machine.
 // These are just constants, not parameters to override.
@@ -106,7 +106,7 @@ always @(posedge clk) begin
 				// Wait half the period - should resume in the
 				// middle of this first pulse.
 				rx_clk_divider = CLOCK_DIVIDE;
-				rx_countdown = 8;
+				rx_countdown = 2;
 				recv_state = RX_CHECK_START;
 			end
 		end
@@ -117,7 +117,7 @@ always @(posedge clk) begin
 					// Pulse still there - good
 					// Wait the bit period to resume half-way
 					// through the first bit.
-					rx_countdown = 16;
+					rx_countdown = 4;
 					rx_bits_remaining = 8;
 					recv_state = RX_READ_BITS;
 				end else begin
@@ -133,7 +133,7 @@ always @(posedge clk) begin
 				// Read this bit in, wait for the next if we
 				// have more to get.
 				rx_data = {rx, rx_data[7:1]};
-				rx_countdown = 16;
+				rx_countdown = 4;
 				rx_bits_remaining = rx_bits_remaining - 1;
 				recv_state = rx_bits_remaining ? RX_READ_BITS : RX_CHECK_STOP;
 			end
@@ -157,20 +157,14 @@ always @(posedge clk) begin
 			// cycle while in this state and then waits
 			// 2 bit periods before accepting another
 			// transmission.
-			rx_countdown = 32;
+			rx_countdown = 8;
 			recv_state = RX_DELAY_RESTART;
 		end
 		RX_RECEIVED: begin
 			// Successfully received a byte.
 			// Raises the received flag for one clock
-			// cycle while in this state and then waits
-			// 1/4 bit period before starting back in the
-			// idle state. This only actually waits for
-			// 3/4 of the stop bit before resuming, but
-			// this should not do any harm as the stop bit
-			// is received the same as the line idle state.
-			rx_countdown = 4;
-			recv_state = RX_DELAY_RESTART;
+			// cycle while in this state.
+			recv_state = RX_IDLE;
 		end
 	endcase
 	
@@ -185,7 +179,7 @@ always @(posedge clk) begin
 				// Send the initial, low pulse of 1 bit period
 				// to signal the start, followed by the data
 				tx_clk_divider = CLOCK_DIVIDE;
-				tx_countdown = 16;
+				tx_countdown = 4;
 				tx_out = 0;
 				tx_bits_remaining = 8;
 				tx_state = TX_SENDING;
@@ -197,12 +191,12 @@ always @(posedge clk) begin
 					tx_bits_remaining = tx_bits_remaining - 1;
 					tx_out = tx_data[0];
 					tx_data = {1'b0, tx_data[7:1]};
-					tx_countdown = 16;
+					tx_countdown = 4;
 					tx_state = TX_SENDING;
 				end else begin
 					// Set delay to send out 2 stop bits.
 					tx_out = 1;
-					tx_countdown = 32;
+					tx_countdown = 8;
 					tx_state = TX_DELAY_RESTART;
 				end
 			end
