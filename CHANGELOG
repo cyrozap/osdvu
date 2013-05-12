@@ -1,0 +1,12 @@
+Aaron Dahlen, 07 Apr 13: 
+
+      1) Accepts baud_rate and clock_rate as parameters.  Auto calculates
+         clock_divide.
+      
+      2) Now uses localparam to prevent parameter modification.
+
+      3) Partially developed test bench, added hooks to see internal operation.  
+         These should probable be removed in the future... 
+
+      4) Eliminated warnings from the XILINX ISE 14.4 synthesizer
+
