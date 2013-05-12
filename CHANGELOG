@@ -1,3 +1,25 @@
+Aaron Dahlen  11 Apr 13: 
+  
+      1) added TX_RECOVER state that waits for "transmit" to be
+          released.  This prevents the transmission of multiple characters 
+          for systems with a slowly changing transmit line.
+
+      2) Tested on Digilent NEXYS3 FPGA at 921600 baud (55 slices consumed).
+         Also tested at 300 baud (76 slices).  Not that the lower baud rate 
+         consumes additional FPGA fabric since the clock dividers are larger.
+
+Aaron Dahlen, 10 Apr 13: 
+
+      1) Continued work on eliminating warnings.  It seems that 
+         the synthesis for a Spartan-6 is different that the 
+         Spartan-3 and coolrunner.  Unable to clear warnings for both.
+         This code synthesizes without warning for Coolrunner and Spartan 3.
+
+      2) Size in CoolrunnerII is 68 to 89 macrocells.  Actual size is 
+         baud rate dependent with higher rates consuming less FPGA fabric.
+
+      3) removed recv_state and tx_state from the module output
+
 Aaron Dahlen, 07 Apr 13: 
 
       1) Accepts baud_rate and clock_rate as parameters.  Auto calculates
